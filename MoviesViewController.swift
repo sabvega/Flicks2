@@ -8,6 +8,7 @@
 
 import UIKit
 import AFNetworking
+import SwiftLoader
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -19,13 +20,20 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        refreshControl = UIRefreshControl()
+        
+         SwiftLoader.show(title: "Loading...", animated: true);         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "onRefresh", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
         
         tableView.dataSource = self
         tableView.delegate = self
         
+        var config : SwiftLoader.Config = SwiftLoader.Config()
+        config.size = 150
+        config.spinnerColor = .redColor()
+        config.foregroundColor = .blackColor()
+        config.foregroundAlpha = 0.5
+        SwiftLoader.setConfig(config)
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
@@ -44,7 +52,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             NSLog("response: \(responseDictionary)")
                             self.movies = responseDictionary["results"] as! [NSDictionary]
                             self.tableView.reloadData()
-                            
+                            SwiftLoader.hide()                            
                     }
                 }
         });
@@ -59,7 +67,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let movies = movies{
+                       if let movies = movies{
             return movies.count
         }else{
             return 0
@@ -93,9 +101,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func onRefresh(){
-        delay(2, closure: {self.refreshControl.endRefreshing()})
+        delay(2, closure: {self.refreshControl.endRefreshing()
+            self.tableView.reloadData()
+        })
     }
-
+    
+    
+   
+    
+    
     /*
     // MARK: - Navigation
 
