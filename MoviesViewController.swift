@@ -17,23 +17,22 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var tableView: UITableView!
     
     var movies: [NSDictionary]?
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
-         SwiftLoader.show(title: "Loading...", animated: true);         refreshControl = UIRefreshControl()
+        
+        refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "onRefresh", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
         
         tableView.dataSource = self
         tableView.delegate = self
         
-        var config : SwiftLoader.Config = SwiftLoader.Config()
-        config.size = 150
-        config.spinnerColor = .redColor()
-        config.foregroundColor = .blackColor()
-        config.foregroundAlpha = 0.5
-        SwiftLoader.setConfig(config)
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
@@ -52,7 +51,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             NSLog("response: \(responseDictionary)")
                             self.movies = responseDictionary["results"] as! [NSDictionary]
                             self.tableView.reloadData()
-                            SwiftLoader.hide()                            
+                             SwiftLoader.hide()
                     }
                 }
         });
@@ -96,6 +95,24 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
+    func showLoader(){
+        var config : SwiftLoader.Config = SwiftLoader.Config()
+        config.size = 150
+        config.spinnerColor = .redColor()
+        config.foregroundColor = .blackColor()
+        config.foregroundAlpha = 0.5
+        
+         SwiftLoader.setConfig(config)
+        
+        SwiftLoader.show(animated: true)
+        
+        
+            SwiftLoader.show(title: "Loading...", animated: true)
+    
+
+    }
+    
+    
     func delay(delay:Double, closure:()->()) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), closure)
     }
@@ -103,6 +120,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func onRefresh(){
         delay(2, closure: {self.refreshControl.endRefreshing()
             self.tableView.reloadData()
+           
         })
     }
     
